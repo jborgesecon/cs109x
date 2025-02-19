@@ -1,0 +1,49 @@
+This course is dedicated to the concepts of data modeling, from nearest neigbor approaches and simple linear models to intermediate techniques such as ridge and LASSO. 
+Model Selection, Avoid Overfitting, and some of the most common mistakes people make in data science. 
+
+Professor Pavlos Protopapas
+
+Main Manual: An Introduction to Statistical Learning (with python), 2nd edition
+ps.: I will use streamlit and Jupyter to display some of the concepts taught throughout
+
+1° Simple Linear Regression (cap 1, cap 3.1.3)
+
+        Statistical Learning refer to various set of tools for *understanding data*. 
+    These tools can be classified as 'supervised' and 'unsupervised':
+        supervised: predicting or estimating and *output* based on one or more *inputs*.
+            applied in business, medicine, astrophysics, public policy, etc...
+        unsupervised: there are inputs, but no known output, but we can learn relationships
+                      and strucutres from such data
+
+        To better illustrate some of the concepts, there are three datasets used:
+            Wages -> Continuous and quantitative output (regression problem)
+            StockMarket -> categorical and qualitative output (classification problem)
+            Gene Expression -> only input data, analysing according to observed characteristics (clustering problem)
+
+        Ps.: The datasets can be found in 'from ISLP import load_data', then import the relevant content
+
+        Historically, althought the 'Statistical Learning' is relativily new, various concepts were developed long ago.
+    The method od *least square* was developed in the beggining of the 19th century, implementing earliest form of what
+    we now call Linear Regression. Then, here is some of what followed:
+        -> Linear Regression
+        -> Linear Discriminant Analysis
+        -> Logistic Regression
+        -> Generalized Linear Model
+        -> Classification and Regression Trees
+        -> Generalized Additive Models
+        -> Neural Networks
+        -> Support Vector Machines
+
+        Book Recommendation: Elements of Statistical Learning (2001)
+
+        Needed Knowlegde: 
+            -> PreCalc
+            -> GA
+            -> Basic Linear Algebra
+            -> Mathematical Notation
+
+    So Far we have that:
+        Understand the importance of descriptive predictive and prescriptive analysis;
+        We need to identify if the situation represents a regression, classification or clustering problem;
+        Decide which models will better suit the given problem;
+        Perform a Cross-validation analysis to validade the fitting of the chosen models;
