@@ -43,7 +43,7 @@ ps.: I will use streamlit and Jupyter to display some of the concepts taught thr
             -> Mathematical Notation
 
     So Far we have that:
-        Understand the importance of descriptive predictive and prescriptive analysis;
+        Understand the importance of descriptive, diagnostic, predictive and prescriptive analysis;
         We need to identify if the situation represents a regression, classification or clustering problem;
         Decide which models will better suit the given problem;
         Perform a Cross-validation analysis to validade the fitting of the chosen models;
