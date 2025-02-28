@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import helper_functions as nav
 import requests
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 from datetime import datetime
 from ISLP import *
@@ -90,10 +92,83 @@ Now, let's begin with Simple Linear Regressions! 🚀
 """)
 
 def show_class1():
-    st.markdown("""
+    st.markdown(r"""
 ## Linear Regression (Chapter 3)
+
+Linear regression is a very simple approach to *supervised learning*, particularly used to predict a quantitative response.
+Since many of other (more fancy) statistical learning approaches are derived from linear regression, it is very important
+to build a strong understanding of this model.
+                
+Here are some problems that Linear Regression would solve:
+
+1. **Presence of Relationship**: Is there evidence that the variables are related? Does a variation in x cause any effect
+in y?
+2. **Relationship Strength**: How much a change in x explain a variation on y? 
+3. **Relevant Variables**: Which other variables explain (or not) the variations of y?
+4. **Impact Size**: How large is the impact of x over y? Couple pennies? Thousands of dolars?
+5. **Prediction Accuracy**: For any given level of x, how accurately can we predict y?
+6. **Linearity**: Verifies if rather or not the observation forms a linear pattern
+7. **Interaction**: If x variables interact with themselves, would it result in a greater impact in y?
+#### Simple Linear Regression (item 3.1)
+
+It is very straight forward. Here we try to predict a quantitative response Y on the basis of a single preditor
+X. It assumes that there is approximately a linear relationship between X and Y. Here is the equation:
+$$
+                Y \approx \beta_0 + \beta_1 X + \epsilon
+$$
+                
+In this equation, $\beta_0$ represents the *Vertical Intercept*, and $\beta_1$ represents the *Slope*,
+and they are called **Coefficients** or **Parameters**.
+
+In practice, the Coefficients are unknown, and therefore we need to estimate them.
+
+
 """)
 
+    col1, col2, col3 = st.columns(3)
+    # Data
+    df = pd.read_csv('data/Advertising.csv')
+
+    # Display in Streamlit
+    with col1:
+        sns.set_theme(style="darkgrid")
+        width = 16
+        height = 9
+        fig = plt.figure(figsize=(height, width))
+        ax = fig.add_subplot(1,1,1)
+        sns.scatterplot(data=df, x='TV', y='sales', color='green')
+        ax.set_ylim(0,30)
+        ax.set_xlim(0,300)
+        ax.set_xlabel('TV')
+        ax.set_ylabel('Sales')
+        ax.legend()
+        st.pyplot(fig.figure)
+    with col2:
+        sns.set_theme(style="darkgrid")
+        width = 16
+        height = 9
+        fig = plt.figure(figsize=(height, width))
+        ax = fig.add_subplot(1,1,1)
+        sns.scatterplot(data=df, x='radio', y='sales', color='green')
+        ax.set_ylim(0,30)
+        ax.set_xlim(0,50)
+        ax.set_xlabel('Radio')
+        ax.set_ylabel('Sales')
+        ax.legend()
+        st.pyplot(fig.figure)
+    with col3:
+        sns.set_theme(style="darkgrid")
+        width = 16
+        height = 9
+        fig = plt.figure(figsize=(height, width))
+        ax = fig.add_subplot(1,1,1)
+        sns.scatterplot(data=df, x='newspaper', y='sales', color='green')
+        ax.set_ylim(0,30)
+        ax.set_xlim(0,100)
+        ax.set_xlabel('Newspaper')
+        ax.set_ylabel('Sales')
+        ax.legend()
+        st.pyplot(fig.figure)
 
 def show_cheatsheets():
     st.header('Cheat Sheet')
