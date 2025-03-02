@@ -6,10 +6,12 @@ import helper_functions as nav
 import requests
 import seaborn as sns
 import matplotlib.pyplot as plt
+import statsmodels.api as sm
+
 
 from datetime import datetime
 from ISLP import *
-
+from ISLP.models import (ModelSpec as MS, summarize, poly)
 
 # # INITIALIZE SESSIONS & DATASETS
 
@@ -120,55 +122,149 @@ $$
 In this equation, $\beta_0$ represents the *Vertical Intercept*, and $\beta_1$ represents the *Slope*,
 and they are called **Coefficients** or **Parameters**.
 
-In practice, the Coefficients are unknown, and therefore we need to estimate them.
+In practice, the Coefficients are unknown, and therefore we need to estimate them (finding the intercept
+$\beta_0$ and the slope $\beta_1$).
 
+Our goal is to calculate the least possible distance among all the observations when tracing a line,
+there are a couple ways of doing so, but here we are studying the *least squares*.
+
+#### Least Squares
+
+Basically, imagine all the observations, now we trace a straight line anywhere in this graph. Now, we
+measure the distance of each observation to the line and write them down. After the last observation, 
+we sum them up, so we see the "net distance" of all the observations regarding our line. This **could**
+help us find the best possible position for the line, seeking the least possible net distance, but this
+approach is flawed: observations above the line would represent a negative distance, and this biases
+our study. The solution found by our dear precursors was to square all the distances, so all the 
+values would be positive, effectively solving our problem.
+
+The "net distance" I mentioned is actually called *residual sum of squares*, but I won't derive it's 
+formula here.
+
+We can see some of those concepts graphically, and so I'm going to use the 'Advertising.csv' dataset,
+provided by the authors. This dataset has the sales, and the investment on TV, radio and newspaper, 
+below are the scatterplots of those variables, having 'sales' as the dependent (y):
 
 """)
+    
 
     col1, col2, col3 = st.columns(3)
     # Data
     df = pd.read_csv('data/Advertising.csv')
 
-    # Display in Streamlit
+    # Display in Streamlit (since pratically all data is customized, I chose not to make a def)
     with col1:
         sns.set_theme(style="darkgrid")
         width = 16
         height = 9
         fig = plt.figure(figsize=(height, width))
         ax = fig.add_subplot(1,1,1)
-        sns.scatterplot(data=df, x='TV', y='sales', color='green')
+        sns.scatterplot(data=df, x='TV', y='sales', color='blue')
         ax.set_ylim(0,30)
         ax.set_xlim(0,300)
         ax.set_xlabel('TV')
         ax.set_ylabel('Sales')
         ax.legend()
         st.pyplot(fig.figure)
+
     with col2:
         sns.set_theme(style="darkgrid")
         width = 16
         height = 9
         fig = plt.figure(figsize=(height, width))
         ax = fig.add_subplot(1,1,1)
-        sns.scatterplot(data=df, x='radio', y='sales', color='green')
+        sns.scatterplot(data=df, x='radio', y='sales', color='blue')
         ax.set_ylim(0,30)
         ax.set_xlim(0,50)
         ax.set_xlabel('Radio')
         ax.set_ylabel('Sales')
         ax.legend()
         st.pyplot(fig.figure)
+
     with col3:
         sns.set_theme(style="darkgrid")
         width = 16
         height = 9
         fig = plt.figure(figsize=(height, width))
         ax = fig.add_subplot(1,1,1)
-        sns.scatterplot(data=df, x='newspaper', y='sales', color='green')
+        sns.scatterplot(data=df, x='newspaper', y='sales', color='blue')
         ax.set_ylim(0,30)
         ax.set_xlim(0,100)
         ax.set_xlabel('Newspaper')
         ax.set_ylabel('Sales')
         ax.legend()
         st.pyplot(fig.figure)
+
+    st.markdown("""
+First, let's analyse the TV regressor. According to the formula provided earlier, we need to find
+the intercept and the slope. The code snippet used to find those values are on the **response.ipynb**
+and can be checked there.
+                
+Here is the result as a table, with not only the *coefficients*, but also the *standard error*, 
+the *t-student* value, and the *P-value* (We'll learn more about them soon):
+""")
+    
+    def coefficients(df, x, y):
+        x1 = pd.DataFrame({
+            'Intercept': np.ones(df.shape[0]),
+            'Slope': df[x]
+            })
+        y1 = df[y]
+        model = sm.OLS(y1, x1)
+        result = model.fit()
+
+        return summarize(result)
+
+    st.dataframe(coefficients(df=df, x='TV', y='sales'))
+
+    st.markdown(r"""
+Now that we found the $\beta_0$ and $\beta_1$, we can swap them in the OLS equation, resulting in:
+
+$sales \approx 7.0326 + 0.0475 * TV$
+                
+#### We get the following regression line:
+""")
+
+    sns.set_theme(style="darkgrid")
+    width = 16
+    height = 9
+    fig = plt.figure() #figsize=(height, width))
+    ax = fig.add_subplot(1,1,1)
+
+    # Scatterplot
+    sns.scatterplot(data=df, x='TV', y='sales', color='blue')
+
+    # Regression line
+    df['predicted_sales'] = 7.0326 + 0.0475 * df['TV']  # Calculate predictions
+    ax.plot(df['TV'], df['predicted_sales'], color='red', linewidth=2, label='Regression Line')
+
+    # Residuals
+    for i in range(len(df)):
+        ax.plot([df['TV'][i], df['TV'][i]], [df['sales'][i], df['predicted_sales'][i]], color='blue', linewidth=0.4)
+
+    # Set axis limits and labels
+    ax.set_ylim(0, 30)
+    ax.set_xlim(0, 300)
+    ax.set_xlabel('TV')
+    ax.set_ylabel('Sales')
+    ax.legend()
+    st.pyplot(fig.figure)
+
+    st.markdown(r"""
+The book then further explains the presenct of the $\epsilon$ term of error. It is actually very
+interesting the way they explain it, so I do reccomend checking it out, but basically what they
+do is: they create two variables x and y, and apply OLS to them, finding the interecept and the
+slope. This would be the **True** values of both $\beta_0$ and $\beta_1$, but then they add an 
+error term,as a normal distribution with mean equals zero, and then they perform again the OLS, 
+now with the errors, and we can see that, altought the model does cath the tendency correctly, it 
+is slightly changes both the slope and the intercept. I real-world situations, we will rarely have
+the "true", but we can apply those methods we learn here to minimize this impact and define the
+accuracy of the Estimates.
+
+
+""")
+
+
 
 def show_cheatsheets():
     st.header('Cheat Sheet')
