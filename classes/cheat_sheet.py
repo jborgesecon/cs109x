@@ -1,4 +1,3 @@
-import emoji
 import streamlit as st
 
 
