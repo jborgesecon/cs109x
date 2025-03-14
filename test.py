@@ -1,61 +1,50 @@
 import pandas as pd
-import numpy as np
-import seaborn as sns
+import statsmodels.api as sm
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Constants
-contract_time = 25  
-total_periods = contract_time * 12  
-initial_investment = 644_000_000  
-monetary_correction_y = 0.1015  
-monetary_correction_m = (1 + monetary_correction_y) ** (1 / 12)  
-profit_y = 124_000_000
-profit_increase_rate_y = 0.05  
-profit_m = profit_y / 12  
-profit_increase_rate_m = (1 + profit_increase_rate_y) ** (1 / 12)  
 
-# Create DataFrame
-df = pd.DataFrame({'period': range(1, total_periods + 1)})
-df['year'] = (df['period'] - 1) // 12 + 1  
-df['month'] = (df['period'] - 1) % 12 + 1  
+# import the data
+df = pd.read_csv('data/Advertising.csv')
 
-# Calculate financial metrics
-df['accumulated_correction'] = monetary_correction_m ** df['period']
-df['corrected_investment'] = initial_investment * df['accumulated_correction']
-df['period_profit'] = profit_m * (profit_increase_rate_m ** df['period'])
-df['accumulated_profit'] = df['period_profit'].cumsum()
+# Extract x and y (adding constand for intercept)
+x = df[['TV']].values
+x = sm.add_constant(x)
+y = df[['sales']].values
 
-# Find payback point
-payback_row = df[df['accumulated_profit'] >= df['corrected_investment']].head(1)
-payback_reached = not payback_row.empty
+# apply model
+model = sm.OLS(y, x)
+result = model.fit()
 
-# Plot results
-plt.figure(figsize=(10, 5))
-sns.lineplot(x=df['period'], y=df['corrected_investment'], label="Correção Monetária", color='orange')
-sns.lineplot(x=df['period'], y=df['accumulated_profit'], label="Receita Bruta", color='blue')
+# check results
+# print(result.summary())
+print(type(x))
+print(type(result))
 
-# Mark payback point if reached
-if payback_reached:
-    payback_period = payback_row['period'].values[0]
-    payback_value = payback_row['corrected_investment'].values[0]
-    plt.scatter(payback_period, payback_value, color='red', zorder=3, label="Payback Point")
+# set params
+parameters = result.params
+intercept = parameters[0]
+slope = parameters[1]
 
-plt.xlabel("Periodo (em meses)")
-plt.ylabel("Valor")
-plt.title("Investimento x Retorno")
-plt.legend()
-plt.grid(True)
+sns.set_theme(style="darkgrid")
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+
+# Scatterplot
+sns.scatterplot(data=df, x='TV', y='sales', color='blue')
+
+# Regression line
+df['predicted_sales'] = intercept + slope * df['TV']
+ax.plot(df['TV'], df['predicted_sales'], color='red', linewidth=2, label='Regression Line')
+
+# Residuals
+for i in range(len(df)):
+    ax.plot([df['TV'][i], df['TV'][i]], [df['sales'][i], df['predicted_sales'][i]], color='gray', linewidth=0.4)
+
+# Set axis limits and labels
+# ax.set_ylim(0, 30)
+# ax.set_xlim(0, 300)
+ax.set_xlabel('TV')
+ax.set_ylabel('Sales')
+ax.legend()
 plt.show()
-
-# If payback is not reached, find the max initial investment that allows payback in the last period
-if not payback_reached:
-    # Calculate the ratio of accumulated profit to accumulated correction for each period
-    df['investment_ratio'] = df['accumulated_profit'] / df['accumulated_correction']
-
-    # Determine the maximum possible initial investment allowing payback at any period
-    max_initial_investment = df['investment_ratio'].max()
-
-    print(f"Maximum possible initial investment for payback within the contract: {max_initial_investment:,.2f}")
-
-    max_initial_investment = df['accumulated_profit'].iloc[-1] / df['accumulated_correction'].iloc[-1]
-    print(f"Payback not reached. The maximum possible initial investment to break even in the last period is: {max_initial_investment:,.2f}")
