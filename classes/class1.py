@@ -179,8 +179,7 @@ the "true", but we can apply those methods we learn here to minimize this impact
 accuracy of the Estimates.
 
 Those can be calculated as the *Residual Standard Error* (RSE) formula, that involves the 
-residual sum of squares (RSS), the 
-standard deviation ($\sigma^2$) and amostration size (*n*).
+residual sum of squares (RSS), the standard deviation ($\sigma^2$) and amostration size (*n*).
 
 The standard error are used to find the *confidence interval*. A 95% confidence interval means that
 there is a 95% change that the given range will contain the true value for the parameter. 

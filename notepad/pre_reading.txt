@@ -31,3 +31,20 @@ other courses:
 
 - https://www.edx.org/course/calculus-applied
 - https://www.edx.org/learn/machine-learning/harvard-university-machine-learning-and-ai-with-python
+
+
+CC_INDEX = 
+IF(
+    LEN(quantitativo_2[centro_de_custo_codigo]) = 15,
+    quantitativo_2[centro_de_custo_codigo],
+
+    IF(
+        len(quantitativo_2[centro_de_custo_codigo]) = 9,
+        LOOKUPVALUE(
+            de_para_ccusto[NOVOS CENTROS DE CUSTO],
+            de_para_ccusto[CODCCUSTO],
+            quantitativo_2[centro_de_custo_codigo],
+            0),
+            BLANK()
+    )
+)

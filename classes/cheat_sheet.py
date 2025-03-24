@@ -49,4 +49,10 @@ $$
 R^2 = \frac{TSS - RSS}{TSS}
 $$
 
+#### Multiple Regression
+$$
+        Y \approx \beta_0 + \beta_1 X1 + \beta_2 X2 + ... + \beta_n Xn + \epsilon
+$$
+
+
 """)
