@@ -1,4 +1,6 @@
 .env
-*-env
+*env
+nb_env.py
 __pycache__
 *.xlsx
+.ipynb_checkpoints
